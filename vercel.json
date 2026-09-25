@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/ocr",
+      "destination": "https://ocr.notnot.store/api/ocr"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }
