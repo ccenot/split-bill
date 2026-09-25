@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #EDE4D8;
+    color: #2B161B;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Receipt edge perforation */
+.receipt-perforation-top {
+  position: relative;
+  height: 14px;
+  background-image: radial-gradient(circle at 10px 0px, transparent 6px, #FAF4EB 6.5px);
+  background-size: 20px 14px;
+  background-repeat: repeat-x;
+}
+
+.receipt-perforation-bottom {
+  position: relative;
+  height: 14px;
+  background-image: radial-gradient(circle at 10px 14px, transparent 6px, #FAF4EB 6.5px);
+  background-size: 20px 14px;
+  background-repeat: repeat-x;
+}
+
+/* Custom dashed lines like thermal paper */
+.receipt-divider {
+  border-bottom: 2px dashed #741A2B;
+  opacity: 0.55;
+}
+
+.receipt-divider-light {
+  border-bottom: 1.5px dashed #B88E96;
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(116, 26, 43, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(116, 26, 43, 0.45);
+}
