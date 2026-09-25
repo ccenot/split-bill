@@ -1,7 +1,7 @@
 import React from 'react';
-import { ReceiptText, Sun, Moon } from 'lucide-react';
+import { RotateCcw, Sun, Moon } from 'lucide-react';
 
-export default function Header({ isDarkMode, onToggleTheme }) {
+export default function Header({ isDarkMode, onToggleTheme, onNewBill }) {
   return (
     <header className="relative w-full">
       {/* Authentic Scalloped / Perforated Receipt Top Edge */}
@@ -17,9 +17,17 @@ export default function Header({ isDarkMode, onToggleTheme }) {
       </div>
 
       <div className="px-5 pt-3 pb-2 flex items-center justify-between">
-        {/* Left Icon */}
+        {/* Left Icon: Buat Tagihan Baru / Reset */}
         <div className="w-8 flex items-center">
-          <ReceiptText className="w-6 h-6 text-maroon-700/80 dark:text-amber-400" />
+          <button
+            type="button"
+            onClick={onNewBill}
+            title="Kosongkan Semua Data & Buat Tagihan Baru"
+            aria-label="Buat Tagihan Baru"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-maroon-700/80 hover:text-maroon-900 dark:text-amber-400 dark:hover:text-amber-300 hover:bg-maroon-100/60 dark:hover:bg-neutral-800 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Center Title & Tagline */}

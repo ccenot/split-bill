@@ -9,51 +9,29 @@ import SettingsModal from './components/SettingsModal';
 import SharedBillView from './components/SharedBillView';
 import AdminDashboard from './components/AdminDashboard';
 import { calculateSettlement } from './utils/calculator';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, RotateCcw } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY_SETTINGS = 'splitbill_settings_v1';
 const LOCAL_STORAGE_KEY_DATA = 'splitbill_data_v1';
 
 const defaultPeople = ['Gue', 'Teman 1', 'Teman 2'];
 
-const initialTransactions = [
-  {
-    id: 'tx_default_1',
-    name: 'Transaksi 1',
-    payer: 'Gue',
-    items: [
-      {
-        id: 'item_1',
-        name: 'Nasi Goreng Spesial',
-        qty: 1,
-        price: 25000,
-        assignedTo: ['Gue']
-      },
-      {
-        id: 'item_2',
-        name: 'Mie Godhog',
-        qty: 1,
-        price: 22000,
-        assignedTo: ['Teman 1']
-      },
-      {
-        id: 'item_3',
-        name: 'Es Teh Manis',
-        qty: 3,
-        price: 5000,
-        assignedTo: ['Gue', 'Teman 1', 'Teman 2']
-      }
-    ],
-    taxType: 'percent',
-    taxValue: 10,
-    serviceType: 'percent',
-    serviceValue: 0,
-    discountType: 'amount',
-    discountValue: 0,
-    rounding: 0,
-    distributionMethod: 'proportional'
-  }
-];
+const createEmptyTransaction = (payer = 'Gue', name = 'Transaksi 1') => ({
+  id: 'tx_' + Date.now(),
+  name,
+  payer,
+  items: [],
+  taxType: 'percent',
+  taxValue: 0,
+  serviceType: 'percent',
+  serviceValue: 0,
+  discountType: 'amount',
+  discountValue: 0,
+  rounding: 0,
+  distributionMethod: 'proportional'
+});
+
+const initialTransactions = [createEmptyTransaction('Gue', 'Transaksi 1')];
 
 export default function App() {
   // Load settings
@@ -254,12 +232,21 @@ export default function App() {
     }, 4000);
   };
 
-  // Reset data ke template awal
-  const handleResetData = () => {
-    setPeople(defaultPeople);
-    setTransactions(initialTransactions);
+  // Reset data / Mulai Tagihan Baru (Auto Clear)
+  const handleResetData = (confirmFirst = true) => {
+    if (confirmFirst && !window.confirm('Kosongkan semua item, pajak, biaya, dan foto nota untuk membuat tagihan baru?')) {
+      return;
+    }
+    const cleanTx = createEmptyTransaction(people[0] || 'Gue', 'Transaksi 1');
+    setTransactions([cleanTx]);
     setCurrentTxIndex(0);
-    showToast('Data berhasil di-reset ke awal.');
+    setReceiptFile(null);
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY_TX);
+    } catch (e) {
+      console.error(e);
+    }
+    showToast('Form berhasil dikosongkan. Siap untuk tagihan baru!');
   };
 
   // Kalkulasi settlement multi-transaksi
@@ -309,7 +296,26 @@ export default function App() {
         <Header
           isDarkMode={isDarkMode}
           onToggleTheme={() => setIsDarkMode(prev => !prev)}
+          onNewBill={() => handleResetData(true)}
         />
+
+        {/* Quick Clear / Tagihan Baru Bar */}
+        <div className="px-4 py-1.5 flex items-center justify-between text-xs font-mono border-b border-dashed border-maroon-700/20 dark:border-neutral-700 bg-maroon-50/50 dark:bg-[#25201C] transition-colors">
+          <span className="text-[11px] text-maroon-800/70 dark:text-amber-200/70">
+            {transactions.reduce((acc, tx) => acc + (tx.items?.length || 0), 0) > 0 
+              ? `${transactions.reduce((acc, tx) => acc + (tx.items?.length || 0), 0)} item belanja terinput` 
+              : 'Belum ada item belanja'}
+          </span>
+          <button
+            type="button"
+            onClick={() => handleResetData(true)}
+            className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold text-rose-700 dark:text-rose-400 hover:bg-rose-100/60 dark:hover:bg-rose-950/40 border border-rose-300/60 dark:border-rose-900/50 transition active:scale-95"
+            title="Kosongkan semua item, pajak, dan foto struk"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>Buat Tagihan Baru (Clear)</span>
+          </button>
+        </div>
 
         {/* Section 1: Foto Struk & OCR */}
         <OcrSection

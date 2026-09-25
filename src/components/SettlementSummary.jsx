@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, MessageSquare, RefreshCw, ArrowRight, Wallet, CheckCircle2, Share2, ExternalLink, Loader2, X } from 'lucide-react';
+import { Copy, Check, MessageSquare, RefreshCw, RotateCcw, ArrowRight, Wallet, CheckCircle2, Share2, ExternalLink, Loader2, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { formatRupiah, formatWhatsAppMessage } from '../utils/calculator';
 import { uploadReceiptImage, saveBillToCloud } from '../utils/supabase';
@@ -341,19 +341,19 @@ export default function SettlementSummary({
           </button>
         </div>
 
-        {/* Reset Button */}
-        <div className="mt-3 pt-2 text-center border-t border-maroon-700/15">
+        {/* Reset / Tagihan Baru Button */}
+        <div className="mt-3 pt-2 text-center border-t border-maroon-700/15 dark:border-neutral-700">
           <button
             type="button"
             onClick={() => {
-              if (window.confirm('Reset semua transaksi dan mulai dari awal?')) {
+              if (window.confirm('Kosongkan semua item belanja, pajak, dan foto struk untuk membuat tagihan baru?')) {
                 onReset();
               }
             }}
-            className="text-[11px] font-mono text-red-600 hover:text-red-800 flex items-center justify-center gap-1 mx-auto transition-colors"
+            className="w-full py-2.5 px-3 rounded-xl border border-dashed border-rose-300 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/20 text-xs font-mono font-semibold text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 flex items-center justify-center gap-1.5 transition-all shadow-xs active:scale-[0.99]"
           >
-            <RefreshCw className="w-3 h-3" />
-            <span>Reset Data & Struk Baru</span>
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Selesai? Kosongkan Semua & Buat Tagihan Baru</span>
           </button>
         </div>
       </div>
@@ -435,6 +435,21 @@ export default function SettlementSummary({
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>Kirim WA</span>
+              </button>
+            </div>
+
+            {/* Quick Auto Clear After Sharing */}
+            <div className="pt-2 border-t border-maroon-700/15 dark:border-neutral-700 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setShareModal({ open: false, url: '', billId: '' });
+                  onReset();
+                }}
+                className="w-full py-2 px-3 text-xs font-mono font-semibold text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-dashed border-rose-300 dark:border-rose-900/50 flex items-center justify-center gap-1.5 transition"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Selesai Bagikan? Kosongkan & Buat Tagihan Baru</span>
               </button>
             </div>
           </div>

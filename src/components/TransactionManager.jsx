@@ -254,17 +254,40 @@ export default function TransactionManager({
         {/* Daftar Item / Menu */}
         <div className="mb-3">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="font-mono text-[11px] font-bold text-maroon-800/80 uppercase">
+            <span className="font-mono text-[11px] font-bold text-maroon-800/80 dark:text-amber-300 uppercase">
               Daftar Item ({currentTx.items?.length || 0})
             </span>
-            <button
-              type="button"
-              onClick={handleAddItem}
-              className="text-[11px] font-mono font-semibold text-maroon-700 hover:text-maroon-900 flex items-center gap-1"
-            >
-              <Plus className="w-3 h-3" />
-              <span>Tambah Item</span>
-            </button>
+            <div className="flex items-center gap-2">
+              {(currentTx.items?.length || 0) > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Kosongkan semua item, pajak, dan biaya di transaksi ini?')) {
+                      updateCurrentTx({
+                        items: [],
+                        taxValue: 0,
+                        serviceValue: 0,
+                        discountValue: 0,
+                        rounding: 0
+                      });
+                    }
+                  }}
+                  className="text-[11px] font-mono text-rose-600 dark:text-rose-400 hover:text-rose-800 flex items-center gap-0.5"
+                  title="Kosongkan item & pajak transaksi ini"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  <span>Kosongkan</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleAddItem}
+                className="text-[11px] font-mono font-semibold text-maroon-700 dark:text-amber-400 hover:text-maroon-900 flex items-center gap-1"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Tambah Item</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-2">
