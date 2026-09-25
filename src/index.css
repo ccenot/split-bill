@@ -7,6 +7,11 @@
     background-color: #EDE4D8;
     color: #2B161B;
     font-family: 'Inter', system-ui, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  html.dark body {
+    background-color: #121110;
+    color: #FAF4EB;
   }
 }
 

@@ -7,6 +7,7 @@ import PaymentDestination from './components/PaymentDestination';
 import SettlementSummary from './components/SettlementSummary';
 import SettingsModal from './components/SettingsModal';
 import SharedBillView from './components/SharedBillView';
+import AdminDashboard from './components/AdminDashboard';
 import { calculateSettlement } from './utils/calculator';
 import { CheckCircle } from 'lucide-react';
 
@@ -116,6 +117,30 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState('');
   const [receiptFile, setReceiptFile] = useState(null);
 
+  // Dark Mode State
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const saved = localStorage.getItem('splitbill_theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('splitbill_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('splitbill_theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  // Deteksi rute URL admin (/admin)
+  const [isAdminRoute, setIsAdminRoute] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
+  });
+
   // Deteksi rute URL untuk melihat share bill (/b/:id atau ?b=:id)
   const [sharedBillId, setSharedBillId] = useState(() => {
     if (typeof window === 'undefined') return null;
@@ -130,6 +155,7 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
+      setIsAdminRoute(path === '/admin' || path.startsWith('/admin/'));
       if (path.startsWith('/b/')) {
         setSharedBillId(path.replace('/b/', '').split('/')[0]);
       } else {
@@ -242,6 +268,19 @@ export default function App() {
     return calculateSettlement(transactions, people);
   }, [transactions, people]);
 
+  // Jika URL mengarah ke halaman Admin (/admin)
+  if (isAdminRoute) {
+    return (
+      <AdminDashboard
+        onBack={() => {
+          window.history.pushState({}, '', '/');
+          setIsAdminRoute(false);
+        }}
+        isDarkMode={isDarkMode}
+      />
+    );
+  }
+
   // Jika URL mengarah ke link share bill publik (/b/:id)
   if (sharedBillId) {
     return (
@@ -256,7 +295,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#EDE4D8] py-4 px-2 sm:px-4 flex flex-col items-center justify-start font-sans">
+    <div className="min-h-screen bg-[#EDE4D8] dark:bg-[#121110] py-4 px-2 sm:px-4 flex flex-col items-center justify-start font-sans transition-colors">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-maroon-800 text-[#FAF4EB] px-4 py-2 rounded-full font-mono text-xs font-semibold shadow-lg flex items-center gap-2 animate-bounce">
@@ -266,9 +305,12 @@ export default function App() {
       )}
 
       {/* Main Receipt Paper Container */}
-      <main className="w-full max-w-xl bg-[#FAF4EB] shadow-2xl rounded-2xl border-2 border-maroon-700/60 overflow-hidden relative transition-all">
+      <main className="w-full max-w-xl bg-[#FAF4EB] dark:bg-[#1E1B18] shadow-2xl rounded-2xl border-2 border-maroon-700/60 dark:border-amber-900/50 overflow-hidden relative transition-all">
         {/* Header with perforated edge */}
-        <Header />
+        <Header
+          isDarkMode={isDarkMode}
+          onToggleTheme={() => setIsDarkMode(prev => !prev)}
+        />
 
         {/* Section 1: Foto Struk & OCR */}
         <OcrSection
@@ -327,9 +369,31 @@ export default function App() {
       </main>
 
       {/* Footer Branding */}
-      <footer className="mt-4 text-center text-xs font-mono text-maroon-900/60">
+      <footer className="mt-4 text-center text-xs font-mono text-maroon-900/60 dark:text-slate-500 space-y-1">
         <p>Talangin Dulu · Hosting on splitbill.notnot.store</p>
-        <p className="text-[10px] mt-0.5">Dibuat dengan Hallmark Design System anti-AI-slop</p>
+        <p className="text-[10px]">
+          Created by{' '}
+          <a
+            href="https://www.tiktok.com/@ccenot"
+            target="_blank"
+            rel="noreferrer"
+            className="underline hover:text-maroon-900 dark:hover:text-slate-300 font-semibold"
+          >
+            @ccenot
+          </a>
+          {' · '}
+          <a
+            href="/admin"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/admin');
+              setIsAdminRoute(true);
+            }}
+            className="hover:underline opacity-80 hover:opacity-100 dark:text-slate-400"
+          >
+            Admin Panel
+          </a>
+        </p>
       </footer>
 
       {/* Settings Modal */}

@@ -2,6 +2,7 @@ import process from 'node:process';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createClient } from '@supabase/supabase-js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +19,14 @@ const PORT = process.env.PORT || 3380;
 const ROUTE9_URL = process.env.ROUTE9_URL || 'http://localhost:20128/v1/chat/completions';
 const ROUTE9_KEY = process.env.ROUTE9_KEY || '';
 const ROUTE9_MODEL = process.env.ROUTE9_MODEL || 'ag/gemini-3.8-flash-high';
+const ADMIN_PIN = process.env.ADMIN_PIN || '1819';
+
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://tmfvbkqdptkceolxzkvh.supabase.co';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
+
+const supabaseAdmin = SUPABASE_SERVICE_KEY 
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY) 
+  : null;
 
 app.use(express.json({ limit: '30mb' }));
 app.use(express.urlencoded({ limit: '30mb', extended: true }));
@@ -25,8 +34,8 @@ app.use(express.urlencoded({ limit: '30mb', extended: true }));
 // Enable CORS for Vercel and public API calls
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-pin');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
@@ -35,6 +44,120 @@ app.use((req, res, next) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => res.json({ status: 'ok', service: 'splitbill-ocr-api' }));
+
+// Middleware for Admin authentication
+const requireAdmin = (req, res, next) => {
+  const pin = req.headers['x-admin-pin'] || req.query.pin || req.body?.pin;
+  if (!pin || pin !== ADMIN_PIN) {
+    return res.status(401).json({ error: 'Akses ditolak: PIN Admin salah atau tidak ada.' });
+  }
+  next();
+};
+
+// Admin Login Check
+app.post('/api/admin/login', (req, res) => {
+  const { pin } = req.body;
+  if (pin === ADMIN_PIN) {
+    return res.json({ success: true, message: 'Login admin berhasil.' });
+  }
+  return res.status(401).json({ error: 'PIN Admin salah.' });
+});
+
+// Admin Get All Bills (dengan statistik & foto)
+app.get('/api/admin/bills', requireAdmin, async (req, res) => {
+  try {
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'Supabase admin client belum dikonfigurasi di server.' });
+    }
+
+    const { data: bills, error } = await supabaseAdmin
+      .from('bills')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    const totalBills = bills.length;
+    const totalWithImages = bills.filter(b => !!b.image_url).length;
+    const totalAmount = bills.reduce((sum, b) => sum + (Number(b.total_amount) || 0), 0);
+
+    res.json({
+      success: true,
+      stats: {
+        totalBills,
+        totalWithImages,
+        totalAmount
+      },
+      bills
+    });
+  } catch (err) {
+    console.error('Admin get bills error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Delete Bill & Purge its Image from Storage
+app.delete('/api/admin/bills/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'Supabase admin client belum dikonfigurasi di server.' });
+    }
+
+    // 1. Ambil info bill untuk cek apakah ada image_url
+    const { data: bill, error: fetchErr } = await supabaseAdmin
+      .from('bills')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchErr && fetchErr.code !== 'PGRST116') {
+      console.warn('Fetch bill error before delete:', fetchErr);
+    }
+
+    // 2. Jika ada foto nota di Supabase Storage, hapus filenya agar hemat kuota storage
+    if (bill && bill.image_url) {
+      try {
+        const parts = bill.image_url.split('/');
+        const filename = parts[parts.length - 1];
+        if (filename) {
+          const { error: storageErr } = await supabaseAdmin.storage
+            .from('receipts')
+            .remove([filename]);
+          if (storageErr) {
+            console.warn('Storage purge warning:', storageErr);
+          } else {
+            console.log(`Purged receipt image: ${filename}`);
+          }
+        }
+      } catch (storageException) {
+        console.error('Failed to purge storage image:', storageException);
+      }
+    }
+
+    // 3. Hapus data bill dari tabel bills
+    const { data: deleted, error: deleteErr } = await supabaseAdmin
+      .from('bills')
+      .delete()
+      .eq('id', id)
+      .select();
+
+    if (deleteErr) {
+      return res.status(500).json({ error: deleteErr.message });
+    }
+
+    res.json({
+      success: true,
+      message: `Bill "${id}" dan foto struknya berhasil dihapus.`,
+      deleted
+    });
+  } catch (err) {
+    console.error('Admin delete bill error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Serve static assets from dist
 app.use(express.static(path.join(__dirname, 'dist')));

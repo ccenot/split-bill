@@ -425,6 +425,21 @@ export default function SharedBillView({ billId, onBack }) {
             </div>
           </div>
         )}
+
+        {/* Footer Credit */}
+        <div className="pt-2 pb-6 text-center text-xs font-mono text-maroon-800/60">
+          <p>
+            Talangin Dulu ·{' '}
+            <a
+              href="https://www.tiktok.com/@ccenot"
+              target="_blank"
+              rel="noreferrer"
+              className="underline hover:text-maroon-900 font-semibold"
+            >
+              Created by @ccenot
+            </a>
+          </p>
+        </div>
       </main>
 
       {/* Floating Action Bar */}
