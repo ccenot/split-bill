@@ -75,7 +75,7 @@ export default function OcrSection({
               : 'bg-transparent text-maroon-800 border-maroon-700/40 hover:bg-maroon-50'
           }`}
         >
-          Tesseract.js (Offline/Free)
+          Offline (Scan)
         </button>
 
         <button
@@ -87,7 +87,7 @@ export default function OcrSection({
               : 'bg-transparent text-maroon-800 border-maroon-700/40 hover:bg-maroon-50'
           }`}
         >
-          notnot AI
+          notnot AI (Scan)
         </button>
       </div>
 
