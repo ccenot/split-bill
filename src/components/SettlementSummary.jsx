@@ -64,7 +64,7 @@ export default function SettlementSummary({
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="w-5 h-5 rounded-full bg-maroon-700 text-[#FAF4EB] text-xs font-mono font-bold flex items-center justify-center">
-            4
+            5
           </span>
           <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-maroon-800 m-0">
             HASIL HITUNGAN GABUNGAN

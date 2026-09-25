@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import OcrSection from './components/OcrSection';
-import TransactionManager from './components/TransactionManager';
 import PeopleManager from './components/PeopleManager';
+import TransactionManager from './components/TransactionManager';
+import PaymentDestination from './components/PaymentDestination';
 import SettlementSummary from './components/SettlementSummary';
 import SettingsModal from './components/SettingsModal';
 import { calculateSettlement } from './utils/calculator';
@@ -231,7 +232,18 @@ export default function App() {
         {/* Dashed divider */}
         <div className="mx-4 receipt-divider my-2"></div>
 
-        {/* Section 2: Transaksi Carousel & Items */}
+        {/* Section 2: Daftar Teman / Orang */}
+        <PeopleManager
+          people={people}
+          setPeople={setPeople}
+          transactions={transactions}
+          setTransactions={setTransactions}
+        />
+
+        {/* Dashed divider */}
+        <div className="mx-4 receipt-divider my-2"></div>
+
+        {/* Section 3: Transaksi Carousel & Items */}
         <TransactionManager
           transactions={transactions}
           setTransactions={setTransactions}
@@ -243,18 +255,16 @@ export default function App() {
         {/* Dashed divider */}
         <div className="mx-4 receipt-divider my-2"></div>
 
-        {/* Section 3: People / Friends Manager */}
-        <PeopleManager
-          people={people}
-          setPeople={setPeople}
-          transactions={transactions}
-          setTransactions={setTransactions}
+        {/* Section 4: Info Rekening / E-Wallet (Tujuan Transfer) */}
+        <PaymentDestination
+          settings={settings}
+          onUpdateSettings={setSettings}
         />
 
         {/* Dashed divider */}
         <div className="mx-4 receipt-divider my-2"></div>
 
-        {/* Section 4: Settlement Result & WhatsApp Sharing */}
+        {/* Section 5: Hasil Hitungan Gabungan & WhatsApp Sharing */}
         <SettlementSummary
           settlementData={settlementData}
           transactions={transactions}
