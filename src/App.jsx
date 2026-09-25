@@ -381,18 +381,6 @@ export default function App() {
           >
             @ccenot
           </a>
-          {' · '}
-          <a
-            href="/admin"
-            onClick={(e) => {
-              e.preventDefault();
-              window.history.pushState({}, '', '/admin');
-              setIsAdminRoute(true);
-            }}
-            className="hover:underline opacity-80 hover:opacity-100 dark:text-slate-400"
-          >
-            Admin Panel
-          </a>
         </p>
       </footer>
 

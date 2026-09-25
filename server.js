@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3380;
 const ROUTE9_URL = process.env.ROUTE9_URL || 'http://localhost:20128/v1/chat/completions';
 const ROUTE9_KEY = process.env.ROUTE9_KEY || '';
 const ROUTE9_MODEL = process.env.ROUTE9_MODEL || 'ag/gemini-3.8-flash-high';
-const ADMIN_PIN = process.env.ADMIN_PIN || '1819';
+const ADMIN_PIN = process.env.ADMIN_PIN || '400004';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://tmfvbkqdptkceolxzkvh.supabase.co';
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || '';

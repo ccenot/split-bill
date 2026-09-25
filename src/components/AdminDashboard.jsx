@@ -155,7 +155,7 @@ export default function AdminDashboard({ onBack, isDarkMode }) {
                 maxLength={8}
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
-                placeholder="PIN Admin (default: 1819)"
+                placeholder="Masukkan 6 Digit PIN Admin"
                 autoFocus
                 className="w-full px-3 py-2 text-center text-lg tracking-widest font-mono rounded-xl border border-maroon-700/30 dark:border-neutral-700 bg-white dark:bg-[#141210] focus:outline-none focus:ring-2 focus:ring-maroon-700 dark:focus:ring-amber-500"
               />
