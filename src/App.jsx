@@ -12,20 +12,20 @@ import { CheckCircle } from 'lucide-react';
 const LOCAL_STORAGE_KEY_SETTINGS = 'splitbill_settings_v1';
 const LOCAL_STORAGE_KEY_DATA = 'splitbill_data_v1';
 
-const defaultPeople = ['Aku', 'Teman 1', 'Teman 2'];
+const defaultPeople = ['Gue', 'Teman 1', 'Teman 2'];
 
 const initialTransactions = [
   {
     id: 'tx_default_1',
     name: 'Transaksi 1',
-    payer: 'Aku',
+    payer: 'Gue',
     items: [
       {
         id: 'item_1',
         name: 'Nasi Goreng Spesial',
         qty: 1,
         price: 25000,
-        assignedTo: ['Aku']
+        assignedTo: ['Gue']
       },
       {
         id: 'item_2',
@@ -39,7 +39,7 @@ const initialTransactions = [
         name: 'Es Teh Manis',
         qty: 3,
         price: 5000,
-        assignedTo: ['Aku', 'Teman 1', 'Teman 2']
+        assignedTo: ['Gue', 'Teman 1', 'Teman 2']
       }
     ],
     taxType: 'percent',
@@ -77,7 +77,7 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed.people) && parsed.people.length > 0) {
-          return parsed.people;
+          return parsed.people.map(p => p === 'Aku' ? 'Gue' : p);
         }
       }
     } catch (e) {
@@ -92,7 +92,14 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed.transactions) && parsed.transactions.length > 0) {
-          return parsed.transactions;
+          return parsed.transactions.map(tx => ({
+            ...tx,
+            payer: tx.payer === 'Aku' ? 'Gue' : tx.payer,
+            items: (tx.items || []).map(it => ({
+              ...it,
+              assignedTo: (it.assignedTo || []).map(p => p === 'Aku' ? 'Gue' : p)
+            }))
+          }));
         }
       }
     } catch (e) {

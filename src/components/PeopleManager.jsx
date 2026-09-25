@@ -53,7 +53,7 @@ export default function PeopleManager({ people, setPeople, transactions, setTran
   };
 
   const handleQuickAdd = () => {
-    const defaults = ['Aku', 'Teman 1', 'Teman 2'];
+    const defaults = ['Gue', 'Teman 1', 'Teman 2'];
     const newOnes = defaults.filter(d => !people.includes(d));
     if (newOnes.length > 0) {
       setPeople([...people, ...newOnes]);
