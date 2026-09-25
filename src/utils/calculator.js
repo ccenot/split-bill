@@ -28,6 +28,7 @@ export function calculateSettlement(transactions, people) {
       taxShare: 0,
       serviceShare: 0,
       discountShare: 0,
+      roundingShare: 0,
       totalOwed: 0,
       totalPaid: 0,
       netBalance: 0, // positif = terima uang, negatif = harus bayar
@@ -67,7 +68,10 @@ export function calculateSettlement(transactions, people) {
       discountAmount = Number(tx.discountValue) || 0;
     }
 
-    const txGrandTotal = Math.max(0, rawSubtotal + taxAmount + serviceAmount - discountAmount);
+    // Hitung Pembulatan / Rounding (bisa minus atau plus)
+    const roundingAmount = Number(tx.rounding) || 0;
+
+    const txGrandTotal = Math.max(0, rawSubtotal + taxAmount + serviceAmount - discountAmount + roundingAmount);
     grandTotalAllTransactions += txGrandTotal;
 
     // Catat siapa yang bayar transaksi ini
@@ -115,6 +119,7 @@ export function calculateSettlement(transactions, people) {
       let pTax = 0;
       let pService = 0;
       let pDiscount = 0;
+      let pRounding = 0;
 
       if (tx.distributionMethod === 'flat') {
         // Bagi rata antar orang yang aktif di struk
@@ -122,20 +127,23 @@ export function calculateSettlement(transactions, people) {
         pTax = taxAmount / count;
         pService = serviceAmount / count;
         pDiscount = discountAmount / count;
+        pRounding = roundingAmount / count;
       } else {
         // Proporsional sesuai porsi belanja
         const ratio = sumActiveSubtotals > 0 ? (personSub / sumActiveSubtotals) : 0;
         pTax = taxAmount * ratio;
         pService = serviceAmount * ratio;
         pDiscount = discountAmount * ratio;
+        pRounding = roundingAmount * ratio;
       }
 
-      const pTotalOwed = Math.max(0, personSub + pTax + pService - pDiscount);
+      const pTotalOwed = Math.max(0, personSub + pTax + pService - pDiscount + pRounding);
 
       if (peopleSummary[p]) {
         peopleSummary[p].taxShare += pTax;
         peopleSummary[p].serviceShare += pService;
         peopleSummary[p].discountShare += pDiscount;
+        peopleSummary[p].roundingShare += pRounding;
         peopleSummary[p].totalOwed += pTotalOwed;
       }
     });
@@ -148,6 +156,7 @@ export function calculateSettlement(transactions, people) {
       taxAmount,
       serviceAmount,
       discountAmount,
+      rounding: roundingAmount,
       grandTotal: txGrandTotal,
       personSubtotals: txPersonSubtotals
     };
@@ -235,6 +244,9 @@ export function formatWhatsAppMessage({
     text += `${idx + 1}. *${tx.name || 'Transaksi ' + (idx + 1)}* : ${formatRupiah(tx.grandTotal || 0)}\n`;
     if (tx.payer) {
       text += `   ↳ Ditalangi oleh: *${tx.payer}*\n`;
+    }
+    if (tx.rounding) {
+      text += `   ↳ Pembulatan: *${tx.rounding > 0 ? '+' : ''}${formatRupiah(tx.rounding)}*\n`;
     }
   });
   text += `\n*TOTAL SEMUA: ${formatRupiah(grandTotal)}*\n`;

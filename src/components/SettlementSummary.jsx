@@ -114,7 +114,7 @@ export default function SettlementSummary({
 
                   <div className="flex items-center justify-between text-[11px] font-mono text-maroon-800/70 pt-1 border-t border-dashed border-maroon-700/15">
                     <span>
-                      Belanja: {formatRupiah(person.itemsSubtotal)} | Pajak/Sc: {formatRupiah((person.taxShare || 0) + (person.serviceShare || 0) - (person.discountShare || 0))}
+                      Belanja: {formatRupiah(person.itemsSubtotal)} | Biaya/Adj: {formatRupiah((person.taxShare || 0) + (person.serviceShare || 0) - (person.discountShare || 0) + (person.roundingShare || 0))}
                     </span>
                     {person.totalPaid > 0 && (
                       <span className="text-emerald-700 font-semibold">

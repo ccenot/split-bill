@@ -48,6 +48,7 @@ Format JSON yang wajib diikuti:
   "taxAmount": 2500,
   "serviceAmount": 0,
   "discountAmount": 0,
+  "roundingAmount": 0,
   "total": 27500
 }
 
@@ -57,7 +58,8 @@ Aturan:
 3. "taxAmount" adalah nilai rupiah pajak/PB1/PPN jika ada. Jika tidak ada, isi 0.
 4. "serviceAmount" adalah nilai rupiah biaya layanan/service jika ada. Jika tidak ada, isi 0.
 5. "discountAmount" adalah potongan diskon jika ada. Jika tidak ada, isi 0.
-6. HANYA kembalikan JSON valid, dilarang menambahkan teks pengantar atau markdown block (\`\`\`json).`;
+6. "roundingAmount" adalah nilai pembulatan / rounding struk jika ada (angka integer, bisa positif atau negatif seperti -25 atau 50). Jika tidak ada, isi 0.
+7. HANYA kembalikan JSON valid, dilarang menambahkan teks pengantar atau markdown block (\`\`\`json).`;
 
     const dataUri = `data:${mimeType || 'image/jpeg'};base64,${imageBase64}`;
 
@@ -122,6 +124,7 @@ Aturan:
       detectedTax: Number(parsed.taxAmount) || 0,
       detectedService: Number(parsed.serviceAmount) || 0,
       detectedDiscount: Number(parsed.discountAmount) || 0,
+      detectedRounding: Number(parsed.roundingAmount) || 0,
       detectedTotal: Number(parsed.total) || 0,
       rawText: content
     });

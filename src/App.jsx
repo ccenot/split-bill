@@ -48,6 +48,7 @@ const initialTransactions = [
     serviceValue: 0,
     discountType: 'amount',
     discountValue: 0,
+    rounding: 0,
     distributionMethod: 'proportional'
   }
 ];
@@ -136,7 +137,7 @@ export default function App() {
 
   // Handle OCR Result
   const handleOcrSuccess = (ocrResult) => {
-    const { storeName, items, detectedTax, detectedService, detectedDiscount } = ocrResult;
+    const { storeName, items, detectedTax, detectedService, detectedDiscount, detectedRounding } = ocrResult;
 
     const currentTx = transactions[currentTxIndex];
     const isCurrentTxEmpty =
@@ -164,7 +165,8 @@ export default function App() {
           serviceType: 'amount',
           serviceValue: detectedService || 0,
           discountType: 'amount',
-          discountValue: detectedDiscount || 0
+          discountValue: detectedDiscount || 0,
+          rounding: detectedRounding || 0
         };
         return next;
       });
@@ -183,6 +185,7 @@ export default function App() {
         serviceValue: detectedService || 0,
         discountType: 'amount',
         discountValue: detectedDiscount || 0,
+        rounding: detectedRounding || 0,
         distributionMethod: 'proportional'
       };
 

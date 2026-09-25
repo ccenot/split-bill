@@ -43,6 +43,7 @@ export default function TransactionManager({
       serviceValue: 0,
       discountType: 'amount',
       discountValue: 0,
+      rounding: 0,
       distributionMethod: 'proportional' // 'proportional' | 'flat'
     };
 
@@ -137,7 +138,9 @@ export default function TransactionManager({
     ? (rawSubtotal * (Number(currentTx.discountValue) || 0)) / 100
     : (Number(currentTx.discountValue) || 0);
 
-  const txTotal = Math.max(0, rawSubtotal + taxAmount + serviceAmount - discountAmount);
+  const roundingAmount = Number(currentTx.rounding) || 0;
+
+  const txTotal = Math.max(0, rawSubtotal + taxAmount + serviceAmount - discountAmount + roundingAmount);
 
   return (
     <section className="px-4 py-2">
@@ -374,9 +377,9 @@ export default function TransactionManager({
           </div>
         </div>
 
-        {/* Pajak, Service & Diskon */}
+        {/* Pajak, Service, Diskon & Pembulatan */}
         <div className="p-2.5 bg-paper-100/70 border border-maroon-700/20 rounded-lg text-xs space-y-2 mb-3">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {/* Pajak */}
             <div>
               <div className="flex items-center justify-between mb-1">
@@ -479,6 +482,28 @@ export default function TransactionManager({
               />
               <span className="text-[10px] font-mono text-maroon-700/80">
                 = {formatRupiah(discountAmount)}
+              </span>
+            </div>
+
+            {/* Pembulatan / Rounding */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-mono text-[11px] font-semibold text-maroon-800">
+                  Pembulatan
+                </span>
+                <span className="text-[9px] font-mono text-maroon-700/60 font-semibold">
+                  (+/- Rp)
+                </span>
+              </div>
+              <input
+                type="number"
+                value={currentTx.rounding !== undefined ? currentTx.rounding : 0}
+                onChange={(e) => updateCurrentTx({ rounding: Number(e.target.value) || 0 })}
+                placeholder="0"
+                className="w-full px-2 py-1 text-xs font-mono rounded border border-maroon-700/30 bg-white font-semibold"
+              />
+              <span className="text-[10px] font-mono text-maroon-700/80">
+                = {Number(currentTx.rounding) > 0 ? '+' : ''}{formatRupiah(Number(currentTx.rounding) || 0)}
               </span>
             </div>
           </div>

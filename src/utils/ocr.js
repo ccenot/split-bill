@@ -11,6 +11,7 @@ export function parseReceiptRawText(rawText) {
   let detectedTax = 0;
   let detectedService = 0;
   let detectedDiscount = 0;
+  let detectedRounding = 0;
   let detectedTotal = 0;
   let storeName = '';
 
@@ -42,6 +43,9 @@ export function parseReceiptRawText(rawText) {
       lineLower.includes('service') ||
       lineLower.includes('diskon') ||
       lineLower.includes('discount') ||
+      lineLower.includes('rounding') ||
+      lineLower.includes('pembulatan') ||
+      lineLower.includes('round off') ||
       lineLower.includes('kembali') ||
       lineLower.includes('change') ||
       lineLower.includes('cash') ||
@@ -73,6 +77,17 @@ export function parseReceiptRawText(rawText) {
     if (lineLower.includes('diskon') || lineLower.includes('discount') || lineLower.includes('potongan')) {
       const match = line.match(/(?:[rR][pP]\.?\s*)?(\d{1,3}(?:[.,]\d{3})+|\d{4,7})/);
       if (match) detectedDiscount = cleanPrice(match[0]);
+      return;
+    }
+
+    // Deteksi Rounding / Pembulatan (bisa negatif atau positif, misal: "Rounding -25" atau "Pembulatan 50")
+    if (lineLower.includes('rounding') || lineLower.includes('pembulatan') || lineLower.includes('round off') || lineLower.includes('round-off')) {
+      const isNegative = line.includes('-') || lineLower.includes('minus');
+      const match = line.match(/(?:[rR][pP]\.?\s*)?(\d{1,3}(?:[.,]\d{3})+|\d{1,7})/);
+      if (match) {
+        const val = cleanPrice(match[0]);
+        detectedRounding = isNegative ? -val : val;
+      }
       return;
     }
 
@@ -138,6 +153,7 @@ export function parseReceiptRawText(rawText) {
     detectedTax,
     detectedService,
     detectedDiscount,
+    detectedRounding,
     detectedTotal,
     rawText
   };
