@@ -1,7 +1,7 @@
 import React from 'react';
-import { Settings, ReceiptText } from 'lucide-react';
+import { ReceiptText } from 'lucide-react';
 
-export default function Header({ onOpenSettings }) {
+export default function Header() {
   return (
     <header className="relative w-full">
       {/* Authentic Scalloped / Perforated Receipt Top Edge */}
@@ -17,7 +17,7 @@ export default function Header({ onOpenSettings }) {
       </div>
 
       <div className="px-5 pt-3 pb-2 flex items-center justify-between">
-        {/* Empty left spacer to balance gear on right */}
+        {/* Left Icon */}
         <div className="w-8 flex items-center">
           <ReceiptText className="w-6 h-6 text-maroon-700/80" />
         </div>
@@ -32,15 +32,8 @@ export default function Header({ onOpenSettings }) {
           </p>
         </div>
 
-        {/* Right Settings Gear */}
-        <button
-          onClick={onOpenSettings}
-          title="Pengaturan API & Rekening"
-          aria-label="Pengaturan"
-          className="w-8 h-8 flex items-center justify-center rounded-full text-maroon-700/80 hover:text-maroon-900 hover:bg-maroon-100/60 transition-colors"
-        >
-          <Settings className="w-5 h-5" />
-        </button>
+        {/* Right spacer to balance header center alignment */}
+        <div className="w-8"></div>
       </div>
 
       {/* Dashed divider */}

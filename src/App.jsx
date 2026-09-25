@@ -228,7 +228,7 @@ export default function App() {
       {/* Main Receipt Paper Container */}
       <main className="w-full max-w-xl bg-[#FAF4EB] shadow-2xl rounded-2xl border-2 border-maroon-700/60 overflow-hidden relative transition-all">
         {/* Header with perforated edge */}
-        <Header onOpenSettings={() => setIsSettingsOpen(true)} />
+        <Header />
 
         {/* Section 1: Foto Struk & OCR */}
         <OcrSection
