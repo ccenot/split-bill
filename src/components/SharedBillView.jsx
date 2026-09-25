@@ -170,7 +170,7 @@ export default function SharedBillView({ billId, onBack }) {
         </div>
       </header>
 
-      <main className="max-w-md mx-auto px-4 pt-4 space-y-4">
+      <main className="max-w-md mx-auto px-4 pt-4 pb-28 space-y-4">
         {/* Bill Overview Header Card */}
         <div className="bg-[#FAF4EB] rounded-2xl border-2 border-maroon-700/30 p-5 shadow-sm space-y-3">
           <div className="flex items-start justify-between">
