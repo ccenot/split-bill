@@ -117,12 +117,11 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState('');
   const [receiptFile, setReceiptFile] = useState(null);
 
-  // Dark Mode State
+  // Dark Mode State - Default Cerah (Light)
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window === 'undefined') return false;
     const saved = localStorage.getItem('splitbill_theme');
-    if (saved) return saved === 'dark';
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return saved === 'dark'; // Default false (Cerah)
   });
 
   useEffect(() => {

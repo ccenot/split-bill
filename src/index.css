@@ -57,3 +57,129 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(116, 26, 43, 0.45);
 }
+
+/* ========================================================
+   DARK THEME HIGH-CONTRAST & CRISP LEGIBILITY OVERRIDES
+   ======================================================== */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #121110 !important;
+  color: #FAF4EB !important;
+}
+
+/* Background receipt container */
+html.dark .bg-\[\#FAF4EB\] {
+  background-color: #1E1B18 !important;
+}
+
+html.dark .bg-\[\#EDE4D8\] {
+  background-color: #121110 !important;
+}
+
+/* Paper cards & boxes */
+html.dark .bg-paper-50,
+html.dark .bg-paper-50\/70,
+html.dark .bg-paper-100,
+html.dark .bg-paper-100\/70 {
+  background-color: #27221E !important;
+}
+
+html.dark .bg-white,
+html.dark .bg-white\/90 {
+  background-color: #2D2723 !important;
+  color: #FAF4EB !important;
+}
+
+/* High contrast texts */
+html.dark .text-maroon-950,
+html.dark .text-maroon-900,
+html.dark .text-maroon-800,
+html.dark .text-ink {
+  color: #FAF4EB !important;
+}
+
+html.dark .text-maroon-700 {
+  color: #F59E0B !important; /* Vibrant golden amber */
+}
+
+html.dark .text-maroon-800\/80,
+html.dark .text-maroon-800\/75,
+html.dark .text-maroon-800\/70,
+html.dark .text-maroon-800\/60,
+html.dark .text-maroon-900\/75,
+html.dark .text-maroon-900\/60 {
+  color: #D6C7B2 !important; /* Soft legible warm cream */
+}
+
+html.dark .text-maroon-700\/80,
+html.dark .text-maroon-700\/70,
+html.dark .text-maroon-700\/60 {
+  color: #FBBF24 !important; /* Light amber */
+}
+
+/* Form inputs & dropdowns */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #161412 !important;
+  color: #FAF4EB !important;
+  border-color: #4A423C !important;
+}
+
+html.dark input::placeholder {
+  color: #8C8075 !important;
+}
+
+/* Borders & Dividers */
+html.dark .border-maroon-700\/60,
+html.dark .border-maroon-700\/50,
+html.dark .border-maroon-700\/40,
+html.dark .border-maroon-700\/30,
+html.dark .border-maroon-700\/20,
+html.dark .border-maroon-700\/15,
+html.dark .border-maroon-700\/10 {
+  border-color: rgba(245, 158, 11, 0.22) !important;
+}
+
+html.dark .receipt-divider {
+  border-bottom: 2px dashed rgba(245, 158, 11, 0.35) !important;
+  opacity: 0.8 !important;
+}
+
+html.dark .receipt-divider-light {
+  border-bottom: 1.5px dashed rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Scalloped edge SVG fill in dark mode */
+html.dark svg.text-\[\#FAF4EB\] {
+  color: #1E1B18 !important;
+  fill: #1E1B18 !important;
+}
+
+/* Badges & Pills */
+html.dark .bg-maroon-100,
+html.dark .bg-maroon-100\/50,
+html.dark .bg-maroon-100\/60,
+html.dark .bg-maroon-100\/70 {
+  background-color: #382821 !important;
+  color: #FCD34D !important;
+}
+
+html.dark .bg-maroon-50,
+html.dark .bg-maroon-50\/40 {
+  background-color: #241D1A !important;
+}
+
+/* Number badge steps: 1, 2, 3, 4, 5 */
+html.dark .bg-maroon-700 {
+  background-color: #851C2F !important;
+  color: #FAF4EB !important;
+}
+
+html.dark .bg-maroon-800 {
+  background-color: #6E1626 !important;
+  color: #FAF4EB !important;
+}
