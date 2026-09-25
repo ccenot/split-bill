@@ -14,7 +14,9 @@ import {
   Building2,
   User,
   MessageCircle,
-  AlertCircle
+  AlertCircle,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { fetchBillFromCloud, updateBillPaymentStatus } from '../utils/supabase';
 
@@ -31,6 +33,23 @@ export default function SharedBillView({ billId, onBack }) {
   const [copiedLink, setCopiedLink] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [markingPaid, setMarkingPaid] = useState({});
+
+  // Sinkronisasi tema Gelap / Cerah dengan Home & localStorage
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const saved = localStorage.getItem('splitbill_theme');
+    return saved === 'dark';
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('splitbill_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('splitbill_theme', 'light');
+    }
+  }, [isDarkMode]);
 
   useEffect(() => {
     async function load() {
@@ -156,17 +175,27 @@ export default function SharedBillView({ billId, onBack }) {
             <ArrowLeft className="w-4 h-4" />
             <span>Kembali</span>
           </button>
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-maroon-800">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-maroon-800 dark:text-amber-400">
             RINCIAN SPLIT BILL
           </span>
-          <button
-            onClick={handleCopyShareLink}
-            className="flex items-center gap-1 text-xs font-mono font-semibold text-maroon-700 hover:text-maroon-900 bg-maroon-100/60 px-2 py-1 rounded-lg transition"
-            title="Salin Link Tagihan"
-          >
-            {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
-            <span>{copiedLink ? 'Tersalin' : 'Share'}</span>
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setIsDarkMode(prev => !prev)}
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-maroon-700 dark:text-amber-400 hover:bg-maroon-100/60 dark:hover:bg-neutral-800 transition"
+              title={isDarkMode ? 'Beralih ke Mode Cerah' : 'Beralih ke Mode Gelap'}
+              aria-label="Toggle Dark Mode"
+            >
+              {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-maroon-700/80" />}
+            </button>
+            <button
+              onClick={handleCopyShareLink}
+              className="flex items-center gap-1 text-xs font-mono font-semibold text-maroon-700 dark:text-amber-300 hover:text-maroon-900 dark:hover:text-amber-200 bg-maroon-100/60 dark:bg-amber-950/50 px-2 py-1 rounded-lg transition"
+              title="Salin Link Tagihan"
+            >
+              {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+              <span>{copiedLink ? 'Tersalin' : 'Share'}</span>
+            </button>
+          </div>
         </div>
       </header>
 
