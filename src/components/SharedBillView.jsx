@@ -124,7 +124,20 @@ export default function SharedBillView({ billId, onBack }) {
   }
 
   const { title, image_url, total_amount, payer, people = [], transactions = [], settlement = {}, payment_info = {}, created_at } = bill;
-  const peopleSummary = settlement.peopleSummary || {};
+  
+  // Normalisasi peopleSummary: dukung format Array maupun Object
+  const rawPeopleSummary = settlement.peopleSummary;
+  const peopleSummaryMap = {};
+  if (Array.isArray(rawPeopleSummary)) {
+    rawPeopleSummary.forEach(p => {
+      if (p && p.name) {
+        peopleSummaryMap[p.name] = p;
+      }
+    });
+  } else if (rawPeopleSummary && typeof rawPeopleSummary === 'object') {
+    Object.assign(peopleSummaryMap, rawPeopleSummary);
+  }
+
   const paidStatus = settlement.paidStatus || {};
 
   const formattedDate = created_at 
@@ -246,10 +259,9 @@ export default function SharedBillView({ billId, onBack }) {
           </div>
 
           {people.map((personName, idx) => {
-            const summary = peopleSummary[personName] || {};
+            const summary = peopleSummaryMap[personName] || {};
             const isPayer = personName === payer;
             const isPaid = paidStatus[personName] || isPayer;
-            const totalOwed = summary.totalOwed || 0;
 
             // Collect items ordered by this person across all transactions
             const orderedItems = [];
@@ -270,6 +282,16 @@ export default function SharedBillView({ billId, onBack }) {
                 }
               });
             });
+
+            const calculatedOwed = orderedItems.reduce((acc, it) => acc + it.sharePrice, 0)
+              + (summary.taxShare || 0)
+              + (summary.serviceShare || 0)
+              - (summary.discountShare || 0)
+              + (summary.roundingShare || 0);
+
+            const totalOwed = (summary.totalOwed !== undefined && summary.totalOwed > 0)
+              ? summary.totalOwed
+              : calculatedOwed;
 
             return (
               <div
