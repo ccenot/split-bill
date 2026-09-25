@@ -95,11 +95,12 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState('');
   const [receiptFile, setReceiptFile] = useState(null);
 
-  // Dark Mode State - Default Cerah (Light)
+  // Dark Mode State - Default Gelap (Dark)
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === 'undefined') return true;
     const saved = localStorage.getItem('splitbill_theme');
-    return saved === 'dark'; // Default false (Cerah)
+    if (saved) return saved === 'dark';
+    return true; // Default true (Gelap)
   });
 
   useEffect(() => {

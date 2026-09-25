@@ -34,11 +34,12 @@ export default function SharedBillView({ billId, onBack }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [markingPaid, setMarkingPaid] = useState({});
 
-  // Sinkronisasi tema Gelap / Cerah dengan Home & localStorage
+  // Sinkronisasi tema Gelap / Cerah dengan Home & localStorage - Default Gelap
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === 'undefined') return true;
     const saved = localStorage.getItem('splitbill_theme');
-    return saved === 'dark';
+    if (saved) return saved === 'dark';
+    return true; // Default true (Gelap)
   });
 
   useEffect(() => {
