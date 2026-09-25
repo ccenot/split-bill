@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { FolderOpen, Camera, Loader2, AlertCircle } from 'lucide-react';
+import { FolderOpen, Camera, Loader2, AlertCircle, Image as ImageIcon, X } from 'lucide-react';
 import { runTesseractOCR, runGeminiOCR } from '../utils/ocr';
 
 export default function OcrSection({
@@ -7,7 +7,8 @@ export default function OcrSection({
   setOcrEngine,
   onOcrSuccess,
   settings,
-  onOpenSettings
+  receiptFile,
+  onReceiptImageChange
 }) {
   const [loading, setLoading] = useState(false);
   const [progressMsg, setProgressMsg] = useState('');
@@ -19,6 +20,10 @@ export default function OcrSection({
   const handleFileSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (onReceiptImageChange) {
+      onReceiptImageChange(file);
+    }
 
     // Reset input agar bisa pilih file yang sama jika diinginkan
     e.target.value = '';
@@ -111,7 +116,7 @@ export default function OcrSection({
           onClick={() => galleryInputRef.current?.click()}
           className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-maroon-700/50 rounded-lg bg-paper-50 hover:bg-maroon-50/40 active:scale-[0.98] transition-all text-maroon-800 cursor-pointer disabled:opacity-50"
         >
-          <span className="text-2xl mb-1" role="img" aria-label="galeri">📁</span>
+          <FolderOpen className="w-5 h-5 mb-1.5 text-maroon-700" />
           <span className="font-mono text-xs font-semibold text-center">
             Upload dari Galeri
           </span>
@@ -123,12 +128,32 @@ export default function OcrSection({
           onClick={() => cameraInputRef.current?.click()}
           className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-maroon-700/50 rounded-lg bg-paper-50 hover:bg-maroon-50/40 active:scale-[0.98] transition-all text-maroon-800 cursor-pointer disabled:opacity-50"
         >
-          <span className="text-2xl mb-1" role="img" aria-label="kamera">📷</span>
+          <Camera className="w-5 h-5 mb-1.5 text-maroon-700" />
           <span className="font-mono text-xs font-semibold text-center">
             Ambil Foto (Kamera)
           </span>
         </button>
       </div>
+
+      {/* Attached Receipt Image Indicator */}
+      {receiptFile && (
+        <div className="mb-3 p-2 bg-maroon-100/60 border border-maroon-700/30 rounded-lg flex items-center justify-between text-xs font-mono">
+          <div className="flex items-center gap-2 overflow-hidden text-maroon-900">
+            <ImageIcon className="w-4 h-4 text-maroon-700 flex-shrink-0" />
+            <span className="truncate font-semibold">
+              Foto Struk Terlampir: {receiptFile.name || 'struk.jpg'}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onReceiptImageChange && onReceiptImageChange(null)}
+            className="p-1 text-maroon-700 hover:text-red-700 transition"
+            title="Hapus foto"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Loading Indicator */}
       {loading && (

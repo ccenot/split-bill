@@ -6,6 +6,7 @@ import TransactionManager from './components/TransactionManager';
 import PaymentDestination from './components/PaymentDestination';
 import SettlementSummary from './components/SettlementSummary';
 import SettingsModal from './components/SettingsModal';
+import SharedBillView from './components/SharedBillView';
 import { calculateSettlement } from './utils/calculator';
 import { CheckCircle } from 'lucide-react';
 
@@ -113,6 +114,32 @@ export default function App() {
   const [ocrEngine, setOcrEngine] = useState('tesseract');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [receiptFile, setReceiptFile] = useState(null);
+
+  // Deteksi rute URL untuk melihat share bill (/b/:id atau ?b=:id)
+  const [sharedBillId, setSharedBillId] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    const path = window.location.pathname;
+    if (path.startsWith('/b/')) {
+      return path.replace('/b/', '').split('/')[0];
+    }
+    const params = new URLSearchParams(window.location.search);
+    return params.get('b') || params.get('bill') || null;
+  });
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path.startsWith('/b/')) {
+        setSharedBillId(path.replace('/b/', '').split('/')[0]);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        setSharedBillId(params.get('b') || params.get('bill') || null);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Persist Settings
   useEffect(() => {
@@ -215,6 +242,19 @@ export default function App() {
     return calculateSettlement(transactions, people);
   }, [transactions, people]);
 
+  // Jika URL mengarah ke link share bill publik (/b/:id)
+  if (sharedBillId) {
+    return (
+      <SharedBillView
+        billId={sharedBillId}
+        onBack={() => {
+          window.history.pushState({}, '', '/');
+          setSharedBillId(null);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#EDE4D8] py-4 px-2 sm:px-4 flex flex-col items-center justify-start font-sans">
       {/* Toast Notification */}
@@ -236,7 +276,8 @@ export default function App() {
           setOcrEngine={setOcrEngine}
           onOcrSuccess={handleOcrSuccess}
           settings={settings}
-          onOpenSettings={() => setIsSettingsOpen(true)}
+          receiptFile={receiptFile}
+          onReceiptImageChange={setReceiptFile}
         />
 
         {/* Dashed divider */}
@@ -281,6 +322,7 @@ export default function App() {
           people={people}
           settings={settings}
           onReset={handleResetData}
+          receiptFile={receiptFile}
         />
       </main>
 

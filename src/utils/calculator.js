@@ -225,7 +225,8 @@ export function formatWhatsAppMessage({
   peopleSummary,
   settlements,
   grandTotal,
-  paymentInfo
+  paymentInfo,
+  shareUrl
 }) {
   const dateStr = new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
@@ -252,24 +253,19 @@ export function formatWhatsAppMessage({
   text += `\n*TOTAL SEMUA: ${formatRupiah(grandTotal)}*\n`;
   text += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
 
-  // Rincian per orang
-  text += `👥 *TAGIHAN PER ORANG:*\n`;
+  // Rincian per orang (nama & total nominal ringkas)
+  text += `👥 *TAGIHAN PER ORANG:*\n\n`;
   peopleSummary.forEach(p => {
-    text += `\n*• ${p.name}* : *${formatRupiah(p.totalOwed)}*\n`;
-    if (p.itemDetails && p.itemDetails.length > 0) {
-      p.itemDetails.forEach(item => {
-        const splitText = item.splitCount > 1 ? ` (bagi ${item.splitCount})` : '';
-        text += `   - ${item.itemName} x${item.qty || 1}${splitText}: ${formatRupiah(item.share)}\n`;
-      });
-    }
-    const taxAndService = (p.taxShare || 0) + (p.serviceShare || 0) - (p.discountShare || 0);
-    if (taxAndService !== 0) {
-      text += `   - Pajak & Service net: ${formatRupiah(taxAndService)}\n`;
-    }
+    text += `• *${p.name}* : *${formatRupiah(p.totalOwed)}*\n`;
     if (p.totalPaid > 0) {
-      text += `   ↳ Sudah bayar/talangi: ${formatRupiah(p.totalPaid)}\n`;
+      text += `   ↳ Sudah bayar/talangi: *${formatRupiah(p.totalPaid)}*\n`;
     }
   });
+
+  // Link rincian & foto nota
+  if (shareUrl) {
+    text += `\n🔗 *Rincian pesanan & foto nota cek di sini:*\n${shareUrl}\n`;
+  }
 
   text += `\n━━━━━━━━━━━━━━━━━━━━━\n`;
   text += `💸 *PETUNJUK TRANSFER:*\n`;
